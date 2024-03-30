@@ -1,9 +1,14 @@
 package org.anderson.pezumart.controllers.api;
 
 import jakarta.validation.Valid;
-import org.anderson.pezumart.controllers.request.UsuarioRequest;
+import org.anderson.pezumart.controllers.request.ActualizarUsuarioRequest;
+import org.anderson.pezumart.controllers.request.RegistrarUsuarioRequest;
+import org.anderson.pezumart.controllers.response.UsuarioActualizadoResponse;
 import org.anderson.pezumart.controllers.response.UsuarioCreadoResponse;
+import org.anderson.pezumart.controllers.response.UsuarioEliminadoResponse;
 import org.anderson.pezumart.entity.Usuario;
+import org.anderson.pezumart.exceptions.UsuarioNotFountException;
+import org.anderson.pezumart.repository.UsuarioRepository;
 import org.anderson.pezumart.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,32 +26,38 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @GetMapping("/listar")
-    public ResponseEntity<?> listarUsuarios(Pageable pageable) {
+    public ResponseEntity<Page<Usuario>> listarUsuarios(Pageable pageable) {
         Page<Usuario> usuarios = usuarioService.listarUsuarios(pageable);
 
 
         return ResponseEntity.ok(usuarios);
     }
 
-    // Falta implementar
     @GetMapping("/buscar")
-    public ResponseEntity<?> obtenerUsuarioPorCoincidenciaDeNombre(@RequestParam("query") String query) {
+    public ResponseEntity<Usuario> obtenerUsuarioPorCoincidenciaDeNombre(@RequestParam("nombre") String nombre) {
+        Usuario usuario = usuarioService.buscarUsuarioPorNombre(nombre);
 
-        return ResponseEntity.ok("Usuario");
+        return ResponseEntity.ok(usuario);
     }
 
-    // Falta implementar
     @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Long id) {
+    public ResponseEntity<Usuario> obtenerUsuarioPorId(@PathVariable Long id) {
 
-        return ResponseEntity.ok("Hola");
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNotFountException("Usuario no encontrado"));
+
+        return ResponseEntity.ok(usuario);
     }
 
     @PostMapping("/crear")
-    public ResponseEntity<?> crearUsuario(@RequestPart("file") MultipartFile file
-                                          ,@RequestPart("usuario") @Valid UsuarioRequest usuario) {
+    public ResponseEntity<UsuarioCreadoResponse> crearUsuario(@RequestPart("file") MultipartFile file
+                                          ,@RequestPart("usuario") @Valid RegistrarUsuarioRequest usuario) {
+        System.out.println("imagen: " + file.getOriginalFilename());
+        System.out.println("file: " + file);
         UsuarioCreadoResponse usuarioCreadoResponse = usuarioService.registrarUsuario(usuario, file);
 
         URI location = ServletUriComponentsBuilder
@@ -56,5 +67,22 @@ public class UsuarioController {
                 .toUri();
 
         return ResponseEntity.created(location).body(usuarioCreadoResponse);
+    }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<?> actualizarUsuario(@RequestPart(value = "imagen", required = false) MultipartFile imagen,
+                                               @RequestPart("usuario") @Valid ActualizarUsuarioRequest usuarioRequest, @PathVariable Long id) {
+
+        UsuarioActualizadoResponse usuarioActualizadoResponse = usuarioService.actualizarUsuario(usuarioRequest, imagen, id);
+
+        return ResponseEntity.ok(usuarioActualizadoResponse);
+    }
+
+
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
+        UsuarioEliminadoResponse usuarioEliminadoResponse = usuarioService.eliminarUsuario(id);
+
+        return ResponseEntity.ok(usuarioEliminadoResponse);
     }
 }

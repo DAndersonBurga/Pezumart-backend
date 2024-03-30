@@ -1,14 +1,22 @@
 package org.anderson.pezumart.service.impl;
 
-import org.anderson.pezumart.controllers.request.UsuarioRequest;
+import org.anderson.pezumart.controllers.response.UsuarioEliminadoResponse;
+import org.anderson.pezumart.controllers.request.ActualizarUsuarioRequest;
+import org.anderson.pezumart.controllers.request.RegistrarUsuarioRequest;
+import org.anderson.pezumart.controllers.response.UsuarioActualizadoResponse;
 import org.anderson.pezumart.controllers.response.UsuarioCreadoResponse;
+import org.anderson.pezumart.entity.ImagenProducto;
+import org.anderson.pezumart.entity.Producto;
 import org.anderson.pezumart.entity.Rol;
 import org.anderson.pezumart.entity.Usuario;
 import org.anderson.pezumart.exceptions.*;
+import org.anderson.pezumart.repository.ImagenProductoRepository;
+import org.anderson.pezumart.repository.ProductoRepository;
 import org.anderson.pezumart.repository.RolRepository;
 import org.anderson.pezumart.repository.UsuarioRepository;
 import org.anderson.pezumart.service.CloudinaryService;
 import org.anderson.pezumart.service.UsuarioService;
+import org.anderson.pezumart.utils.auth.UsuarioAutenticadoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,16 +43,20 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ProductoRepository productoRepository;
+    @Autowired
+    private ImagenProductoRepository imagenProductoRepository;
 
     @Override
-    public UsuarioCreadoResponse registrarUsuario(UsuarioRequest usuarioRequest, MultipartFile file) {
+    public UsuarioCreadoResponse registrarUsuario(RegistrarUsuarioRequest registrarUsuarioRequest, MultipartFile file) {
 
-         Optional<Usuario> usuarioOptional = usuarioRepository.findByCorreo(usuarioRequest.getCorreo());
+         Optional<Usuario> usuarioOptional = usuarioRepository.findByCorreo(registrarUsuarioRequest.getCorreo());
          if(usuarioOptional.isPresent()) {
              throw new UsuarioExistsException("El usuario ya existe.");
          }
 
-        Long idRol = (long) usuarioRequest.getRol();
+        Long idRol = (long) registrarUsuarioRequest.getRol();
         Rol rol = rolRepository.findById(idRol)
                 .orElseThrow(() -> new RolNotFoundException("El rol no fue encontrado."));
 
@@ -65,15 +78,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         String imagenUrl = imagenMap.get("url");
 
         Usuario usuario = Usuario.builder()
-                .nombreCompleto(usuarioRequest.getNombreCompleto())
-                .telefono(usuarioRequest.getTelefono())
-                .password(passwordEncoder.encode(usuarioRequest.getPassword()))
-                .direccion(usuarioRequest.getDireccion())
+                .nombreCompleto(registrarUsuarioRequest.getNombreCompleto())
+                .telefono(registrarUsuarioRequest.getTelefono())
+                .password(passwordEncoder.encode(registrarUsuarioRequest.getPassword()))
+                .direccion(registrarUsuarioRequest.getDireccion())
                 .nombreImagen(publicIdImagen)
                 .imagenUrl(imagenUrl)
-                .correo(usuarioRequest.getCorreo())
+                .correo(registrarUsuarioRequest.getCorreo())
                 .rol(rol)
-                .coordenadas(usuarioRequest.getCoordenadas())
+                .coordenadas(registrarUsuarioRequest.getCoordenadas())
                 .build();
 
 
@@ -91,5 +104,77 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Usuario buscarUsuarioPorCorreo(String correo) {
         return usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new UsuarioNotFountException("Usuario no encontrado."));
+    }
+
+    @Override
+    public Usuario buscarUsuarioPorNombre(String nombre) {
+        return usuarioRepository.findByNombreCompletoContainingIgnoreCase(nombre)
+                .orElseThrow(() -> new UsuarioNotFountException("Usuario no encontrado."));
+    }
+
+    @Override
+    public UsuarioActualizadoResponse actualizarUsuario(ActualizarUsuarioRequest actualizarUsuarioRequest, MultipartFile file, Long id) {
+
+        Usuario usuarioDB = usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNotFountException("Usuario no encontrado."));
+
+        System.out.println(file);
+        if(file != null && !file.isEmpty()) {
+            cloudinaryService.deleteImage(usuarioDB.getNombreImagen());
+
+            Map<String, String> imagenData = cloudinaryService.uploadImage(file, "usuarios");
+
+            String publicIdImagen = imagenData.get("publicId");
+            String imagenUrl = imagenData.get("url");
+
+            usuarioDB.setNombreImagen(publicIdImagen);
+            usuarioDB.setImagenUrl(imagenUrl);
+
+        }
+
+        usuarioDB.setNombreCompleto(actualizarUsuarioRequest.getNombreCompleto());
+        usuarioDB.setTelefono(actualizarUsuarioRequest.getTelefono());
+        usuarioDB.setDireccion(actualizarUsuarioRequest.getDireccion());
+        usuarioDB.setCoordenadas(actualizarUsuarioRequest.getCoordenadas());
+
+        usuarioRepository.save(usuarioDB);
+
+        return UsuarioActualizadoResponse.builder()
+                .nombreCompleto(usuarioDB.getNombreCompleto())
+                .imagenUrl(usuarioDB.getImagenUrl())
+                .mensaje("Usuario actualizado " + usuarioDB.getNombreCompleto() + " exitosamente.")
+                .build();
+    }
+
+    @Override
+    public UsuarioEliminadoResponse eliminarUsuario(Long id) {
+
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNotFountException("Usuario no encontrado."));
+
+        List<Producto> productos = productoRepository.findAllByUsuarioId(id);
+        List<List<ImagenProducto>> imagenesProductos = productos.stream()
+                .map(producto -> imagenProductoRepository.findAllByProductoId(producto.getId()))
+                .toList();
+
+        imagenesProductos.forEach(imagenProductos -> {
+            imagenProductos.forEach(imagenProducto -> {
+                cloudinaryService.deleteImage(imagenProducto.getNombreImagen());
+            });
+
+            imagenProductoRepository.deleteAll(imagenProductos);
+        });
+
+        productoRepository.deleteAll(productos);
+
+        cloudinaryService.deleteImage(usuario.getNombreImagen());
+        usuarioRepository.delete(usuario);
+
+        return UsuarioEliminadoResponse.builder()
+                .fecha(LocalDateTime.now())
+                .id(id)
+                .mensaje("Usuario eliminado exitosamente.")
+                .nombreCompleto(usuario.getNombreCompleto())
+                .build();
     }
 }

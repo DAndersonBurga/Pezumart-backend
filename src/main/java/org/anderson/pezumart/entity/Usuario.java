@@ -58,6 +58,7 @@ public class Usuario implements UserDetails {
         return Set.of(new SimpleGrantedAuthority("ROLE_" + rol.getRol().name()));
     }
 
+    @JsonIgnore
     @Override
     public String getUsername() {
         return correo;

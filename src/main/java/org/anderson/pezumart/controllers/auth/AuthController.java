@@ -1,5 +1,6 @@
 package org.anderson.pezumart.controllers.auth;
 
+import jakarta.validation.Valid;
 import org.anderson.pezumart.controllers.request.LoginRequest;
 import org.anderson.pezumart.controllers.response.LoginResponse;
 import org.anderson.pezumart.service.auth.AuthenticationService;
@@ -15,7 +16,7 @@ public class AuthController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
 
         LoginResponse loginResponse = authenticationService.login(loginRequest);
 

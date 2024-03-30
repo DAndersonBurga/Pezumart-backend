@@ -6,13 +6,12 @@ import org.anderson.pezumart.exceptions.UsuarioNotFountException;
 import org.anderson.pezumart.utils.error.ApiErrorUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class UsuarioEceptionHandler {
-
-
+public class UsuarioExceptionHandler {
     @ExceptionHandler(UsuarioExistsException.class)
     public ResponseEntity<ApiError> handleUsuarioExistsException(HttpServletRequest httpRequest, UsuarioExistsException e) {
 
@@ -22,11 +21,11 @@ public class UsuarioEceptionHandler {
     }
 
     @ExceptionHandler(UsuarioNotFountException.class)
-    public ResponseEntity<ApiError> handleGenericException(HttpServletRequest httpRequest, UsuarioNotFountException e) {
+    public ResponseEntity<ApiError> handleUsuarioNotFountException(HttpServletRequest httpRequest, UsuarioNotFountException e) {
 
         ApiError apiError = ApiErrorUtils.generateApiError(e, httpRequest, "El usuario no fue encontrado");
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
 }

@@ -18,9 +18,6 @@ public class CloudinaryServiceImpl implements CloudinaryService {
     @Autowired
     private Cloudinary cloudinary;
 
-    @Value("${cloudinary.api-secret}")
-    private String apiSecret;
-
     @Override
     public Map<String, String> uploadImage(MultipartFile file, String folderName) {
         try {

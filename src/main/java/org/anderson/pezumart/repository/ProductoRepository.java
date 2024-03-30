@@ -7,8 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
     Page<ProductoView> findAllProjectedBy(Pageable pageable);
-    Page<ProductoView> findAllByNombreContaining(Pageable pageable, String nombre);
+    Page<ProductoView> findAllByNombreContainingIgnoreCase(Pageable pageable, String nombre);
     Page<MiProductoView> findAllByUsuarioId(Pageable pageable, Long id);
+    List<Producto> findAllByUsuarioId(Long id);
 }

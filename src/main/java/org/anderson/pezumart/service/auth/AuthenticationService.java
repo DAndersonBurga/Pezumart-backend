@@ -31,6 +31,7 @@ public class AuthenticationService {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("nombre", usuario.getNombreCompleto());
         extraClaims.put("rol", usuario.getRol().getRol().name()); // Es un Enum y debe convertirse a string
+        extraClaims.put("imagen", usuario.getImagenUrl());
 
         return extraClaims;
     }

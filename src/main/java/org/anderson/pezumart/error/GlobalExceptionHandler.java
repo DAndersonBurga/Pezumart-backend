@@ -13,13 +13,6 @@ import java.io.IOException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGenericException(HttpServletRequest httpRequest, Exception e) {
-
-        ApiError apiError = ApiErrorUtils.generateApiError(e, httpRequest, "Error interno en el servidor, vuelva a intentarlo");
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
-    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleMethodArgumentNotValidException(HttpServletRequest httpRequest, MethodArgumentNotValidException e) {

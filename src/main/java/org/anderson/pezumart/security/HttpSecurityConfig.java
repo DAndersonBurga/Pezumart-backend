@@ -79,6 +79,12 @@ public class HttpSecurityConfig {
                 authHttp.requestMatchers(HttpMethod.GET, "/usuario/{id}")
                         .hasRole(ERol.ADMINISTRADOR.name());
 
+                authHttp.requestMatchers(HttpMethod.DELETE, "/usuario/eliminar/{id}")
+                        .hasRole(ERol.ADMINISTRADOR.name());
+
+                authHttp.requestMatchers(HttpMethod.PUT, "/usuario/actualizar/{id}")
+                        .hasAnyRole(ERol.ADMINISTRADOR.name());
+
                 // ROLES
                 authHttp.requestMatchers(HttpMethod.GET, "/rol/listar")
                         .hasRole(ERol.ADMINISTRADOR.name());

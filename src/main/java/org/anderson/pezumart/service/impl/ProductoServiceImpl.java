@@ -179,7 +179,7 @@ public class ProductoServiceImpl implements ProductoService {
             throw new ProductoNotFoundException("El nombre del producto no puede ser nulo");
         }
 
-        return productoRepository.findAllByNombreContaining(pageable, nombre);
+        return productoRepository.findAllByNombreContainingIgnoreCase(pageable, nombre);
     }
 
     @Override
