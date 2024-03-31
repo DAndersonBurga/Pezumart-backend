@@ -118,7 +118,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuarioDB = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFountException("Usuario no encontrado."));
 
-        System.out.println(file);
         if(file != null && !file.isEmpty()) {
             cloudinaryService.deleteImage(usuarioDB.getNombreImagen());
 
