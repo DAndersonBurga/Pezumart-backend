@@ -3,7 +3,6 @@ package org.anderson.pezumart.service.impl;
 import com.cloudinary.Cloudinary;
 import org.anderson.pezumart.service.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
