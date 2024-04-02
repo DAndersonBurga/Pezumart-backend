@@ -102,7 +102,7 @@ public class ProductoServiceImpl implements ProductoService {
                 .usuario(usuario)
                 .build();
 
-        productoRepository.save(producto);
+        Producto productoGuardado = productoRepository.save(producto);
 
         List<ImagenProducto> imagenesProductoList = imagenes.stream().map(imagen -> {
             Map<String, String> imagenSubida = cloudinaryService.uploadImage(imagen, "productos");
@@ -115,7 +115,7 @@ public class ProductoServiceImpl implements ProductoService {
 
         imagenProductoRepository.saveAll(imagenesProductoList);
 
-        return new CrearProductoResponse(producto.getId(), producto.getNombre(), "Producto creado exitosamente");
+        return new CrearProductoResponse(productoGuardado.getId(), productoGuardado.getNombre(), "Producto creado exitosamente");
     }
 
     @Override

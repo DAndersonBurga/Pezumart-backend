@@ -17,11 +17,8 @@ import java.util.List;
 public interface ProductoService {
     ProductoResponse obtenerProductoPorId(Long id);
     CrearProductoResponse crearProducto(CrearProductoRequest crearProductoRequest, List<MultipartFile> imagenes);
-    // Actualizar producto
     ActualizarProductoResponse actualizarProducto(Long id, ActualizarProductoRequest actualizarProductoRequest);
-    // Eliminar producto
     ProductoEliminadoResponse eliminarProducto(Long id);
-    // Buscar producto por nombre
     Page<ProductoView> buscarProductoPorNombre(Pageable pageable, String nombre);
     Page<MiProductoView> buscarProductosDelUsuarioAutenticado(Pageable pageable);
 }
