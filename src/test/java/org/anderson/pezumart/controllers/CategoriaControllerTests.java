@@ -1,9 +1,8 @@
 package org.anderson.pezumart.controllers;
 
-import org.anderson.pezumart.controllers.api.RolController;
-import org.anderson.pezumart.entity.Rol;
-import org.anderson.pezumart.entity.enums.ERol;
-import org.anderson.pezumart.repository.RolRepository;
+import org.anderson.pezumart.controllers.api.CategoriaController;
+import org.anderson.pezumart.entity.Categoria;
+import org.anderson.pezumart.repository.CategoriaRepository;
 import org.anderson.pezumart.service.UsuarioService;
 import org.anderson.pezumart.utils.auth.JwtUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -23,13 +22,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 
-@WebMvcTest(controllers = RolController.class)
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+@WebMvcTest(controllers = CategoriaController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
-public class RolControllerTests {
+public class CategoriaControllerTests {
 
     @MockBean
-    private RolRepository rolRepository;
+    private CategoriaRepository categoriaRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -40,15 +42,16 @@ public class RolControllerTests {
     @MockBean
     private JwtUtils jwtUtils;
 
-    @Test
-    @DisplayName("Listar roles")
-    void RolController_ListarRoles_ReturnListRol() throws Exception {
-        Mockito.when(rolRepository.findAll())
-                .thenReturn(List.of(new Rol(1L, ERol.USUARIO)));
 
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/rol/listar"));
+    @Test
+    @DisplayName("Listar Categorias")
+    void CategoriaController_ListarCategorias_ReturnListCategoria() throws Exception {
+        when(categoriaRepository.findAll())
+                .thenReturn(List.of(new Categoria(1L, "Comida")));
+
+        ResultActions response = mockMvc.perform(get("/categoria/listar"));
         response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].nombre").value("Comida"))
                 .andDo(MockMvcResultHandlers.print());
 
     }
