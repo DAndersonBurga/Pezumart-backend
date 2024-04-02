@@ -3,7 +3,7 @@ package org.anderson.pezumart.controllers.auth;
 import jakarta.validation.Valid;
 import org.anderson.pezumart.controllers.request.LoginRequest;
 import org.anderson.pezumart.controllers.response.LoginResponse;
-import org.anderson.pezumart.service.auth.AuthenticationService;
+import org.anderson.pezumart.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

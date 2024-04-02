@@ -3,6 +3,7 @@ package org.anderson.pezumart.service.auth;
 import org.anderson.pezumart.controllers.request.LoginRequest;
 import org.anderson.pezumart.controllers.response.LoginResponse;
 import org.anderson.pezumart.entity.Usuario;
+import org.anderson.pezumart.service.AuthenticationService;
 import org.anderson.pezumart.service.UsuarioService;
 import org.anderson.pezumart.utils.auth.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
     private JwtUtils jwtUtils;

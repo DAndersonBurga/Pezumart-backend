@@ -5,7 +5,7 @@ import org.anderson.pezumart.controllers.response.LoginResponse;
 import org.anderson.pezumart.entity.Rol;
 import org.anderson.pezumart.entity.Usuario;
 import org.anderson.pezumart.entity.enums.ERol;
-import org.anderson.pezumart.service.auth.AuthenticationService;
+import org.anderson.pezumart.service.auth.AuthenticationServiceImpl;
 import org.anderson.pezumart.utils.auth.JwtUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ public class AuthenticationServiceTests {
     private AuthenticationManager authenticationManager;
 
     @InjectMocks
-    private AuthenticationService authenticationService;
+    private AuthenticationServiceImpl authenticationServiceImpl;
 
     private Usuario usuario;
 
@@ -65,7 +65,7 @@ public class AuthenticationServiceTests {
                 .thenReturn("jwt");
 
         LoginRequest loginRequest = new LoginRequest("correo@correo.com", "123456");
-        LoginResponse loginResponse = authenticationService.login(loginRequest);
+        LoginResponse loginResponse = authenticationServiceImpl.login(loginRequest);
 
 
         Assertions.assertThat(loginResponse).isNotNull();
