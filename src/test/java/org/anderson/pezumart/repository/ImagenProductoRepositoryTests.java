@@ -104,8 +104,18 @@ public class ImagenProductoRepositoryTests {
     @Test
     @DisplayName("Listar todas las imagenes de un producto por idProducto")
     void ImagenProductoRepository_ListarImagenesPorProductoId_ReturnListImagenProducto() {
+        ImagenProducto imagenProducto = ImagenProducto.builder()
+                .nombreImagen("Imagen de prueba")
+                .imagenUrl("https://www.imagen.com")
+                .producto(productoRepository.findById(producto.getId()).get())
+                .build();
+
         ImagenProducto imagenProductoCreada = imagenProductoRepository.save(imagenProducto);
-        List<ImagenProducto> imagenesProductos = imagenProductoRepository.findAllByProductoId(imagenProductoCreada.getId());
+        System.out.println(imagenProductoCreada.getId());
+        imagenProductoRepository.save(imagenProducto);
+
+        List<ImagenProducto> imagenesProductos = imagenProductoRepository.findAllByProductoId(producto.getId());
+        imagenesProductos.forEach(System.out::println);
 
         Assertions.assertThat(imagenesProductos).isNotNull();
         Assertions.assertThat(imagenesProductos).hasSizeGreaterThan(0);

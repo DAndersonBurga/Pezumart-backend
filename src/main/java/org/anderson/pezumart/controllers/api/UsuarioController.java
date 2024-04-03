@@ -33,7 +33,6 @@ public class UsuarioController {
     public ResponseEntity<Page<Usuario>> listarUsuarios(Pageable pageable) {
         Page<Usuario> usuarios = usuarioService.listarUsuarios(pageable);
 
-
         return ResponseEntity.ok(usuarios);
     }
 
@@ -56,8 +55,6 @@ public class UsuarioController {
     @PostMapping("/crear")
     public ResponseEntity<UsuarioCreadoResponse> crearUsuario(@RequestPart("file") MultipartFile file
                                           ,@RequestPart("usuario") @Valid RegistrarUsuarioRequest usuario) {
-        System.out.println("imagen: " + file.getOriginalFilename());
-        System.out.println("file: " + file);
         UsuarioCreadoResponse usuarioCreadoResponse = usuarioService.registrarUsuario(usuario, file);
 
         URI location = ServletUriComponentsBuilder
@@ -70,7 +67,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/actualizar/{id}")
-    public ResponseEntity<?> actualizarUsuario(@RequestPart(value = "imagen", required = false) MultipartFile imagen,
+    public ResponseEntity<UsuarioActualizadoResponse> actualizarUsuario(@RequestPart(value = "imagen", required = false) MultipartFile imagen,
                                                @RequestPart("usuario") @Valid ActualizarUsuarioRequest usuarioRequest, @PathVariable Long id) {
 
         UsuarioActualizadoResponse usuarioActualizadoResponse = usuarioService.actualizarUsuario(usuarioRequest, imagen, id);
@@ -80,7 +77,7 @@ public class UsuarioController {
 
 
     @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
+    public ResponseEntity<UsuarioEliminadoResponse> eliminarUsuario(@PathVariable Long id) {
         UsuarioEliminadoResponse usuarioEliminadoResponse = usuarioService.eliminarUsuario(id);
 
         return ResponseEntity.ok(usuarioEliminadoResponse);
