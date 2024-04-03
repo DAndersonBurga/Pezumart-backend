@@ -39,7 +39,7 @@ public class ProductoController {
     }
 
     @GetMapping("/listar/mis-productos")
-    public ResponseEntity<?> listarProductosDelUsuarioAutenticado(Pageable pageable) {
+    public ResponseEntity<Page<MiProductoView>> listarProductosDelUsuarioAutenticado(Pageable pageable) {
         Page<MiProductoView> productos = productoService.buscarProductosDelUsuarioAutenticado(pageable);
 
         return ResponseEntity.ok(productos);
@@ -67,24 +67,20 @@ public class ProductoController {
         return ResponseEntity.created(location).body(productoResponse);
     }
 
-    // Actualizar producto
     @PutMapping("/actualizar/{id}")
-    public ResponseEntity<?> actualizarProducto(@RequestBody @Valid ActualizarProductoRequest actualizarProductoRequest,
+    public ResponseEntity<ActualizarProductoResponse> actualizarProducto(@RequestBody @Valid ActualizarProductoRequest actualizarProductoRequest,
                                                 @PathVariable Long id) {
         ActualizarProductoResponse actualizarProductoResponse = productoService.actualizarProducto(id, actualizarProductoRequest);
         return ResponseEntity.ok(actualizarProductoResponse);
     }
 
-
-    // Eliminar producto
     @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<?> eliminarProducto(@PathVariable Long id) {
+    public ResponseEntity<ProductoEliminadoResponse> eliminarProducto(@PathVariable Long id) {
         ProductoEliminadoResponse productoEliminadoResponse = productoService.eliminarProducto(id);
 
         return ResponseEntity.ok(productoEliminadoResponse);
     }
 
-    // Buscar producto por nombre
     @GetMapping("/buscar")
     public ResponseEntity<Page<ProductoView>> buscarProductoPorNombre(Pageable pageable, @RequestParam String nombre) {
         Page<ProductoView> productoViews = productoService.buscarProductoPorNombre(pageable, nombre);

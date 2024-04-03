@@ -2,6 +2,7 @@ package org.anderson.pezumart.controllers.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
@@ -10,7 +11,7 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 public class ActualizarProductoRequest {
 
-    @NotBlank
+    @NotNull
     @Min(1)
     private Long categoriaId;
 
@@ -22,14 +23,14 @@ public class ActualizarProductoRequest {
     @Length(max = 300)
     private String descripcion;
 
-    @NotBlank
+    @NotNull
     private boolean disponible;
 
-    @NotBlank
+    @NotNull
     @Min(0)
     private double precio;
 
-    @NotBlank
+    @NotNull
     @Min(0)
     private int cantidadDisponible;
 }

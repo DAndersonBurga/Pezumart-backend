@@ -3,7 +3,7 @@ package org.anderson.pezumart.repository.projections;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface MiProductoView {
+public interface MiProductoView  {
     Long getId();
     String getNombre();
     String getDescripcion();
