@@ -6,6 +6,7 @@ import org.hibernate.annotations.Check;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -47,7 +48,7 @@ public class Producto {
 
     @Column(name = "fecha_creacion")
     @CreationTimestamp
-    private LocalDate fechaCreacion;
+    private LocalDateTime fechaCreacion;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "producto")
     private List<ImagenProducto> imagenes;

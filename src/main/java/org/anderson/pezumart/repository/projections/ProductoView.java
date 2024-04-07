@@ -2,6 +2,7 @@ package org.anderson.pezumart.repository.projections;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ProductoView {
@@ -12,7 +13,7 @@ public interface ProductoView {
     boolean getDisponible();
     double getPrecio();
     int getCantidadDisponible();
-    LocalDate getFechaCreacion();
+    LocalDateTime getFechaCreacion();
     Usuario getUsuario();
     List<ImagenProducto> getImagenes();
 

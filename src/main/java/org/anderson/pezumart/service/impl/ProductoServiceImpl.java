@@ -193,6 +193,6 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public List<ProductoView> obtenerUltimos8Productos() {
-        return productoRepository.findFirst8ByOrderByFechaCreacionDesc();
+        return productoRepository.findTop8ByOrderByFechaCreacionDesc();
     }
 }

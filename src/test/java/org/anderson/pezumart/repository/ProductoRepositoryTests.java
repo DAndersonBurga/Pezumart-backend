@@ -196,7 +196,7 @@ public class ProductoRepositoryTests {
     void ProductoRepository_ObtenerLosUltimos8Productos_ReturnListProductoView() {
         productoRepository.save(producto);
 
-        List<ProductoView> productoViews = productoRepository.findFirst8ByOrderByFechaCreacionDesc();
+        List<ProductoView> productoViews = productoRepository.findTop8ByOrderByFechaCreacionDesc();
 
         Assertions.assertThat(productoViews).isNotNull();
         Assertions.assertThat(productoViews).hasSizeGreaterThan(0);

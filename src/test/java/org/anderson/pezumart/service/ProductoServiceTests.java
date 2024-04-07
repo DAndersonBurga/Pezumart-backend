@@ -26,7 +26,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -98,7 +97,6 @@ public class ProductoServiceTests {
                 .categoria(categoria)
                 .usuario(usuario)
                 .cantidadDisponible(10)
-                .fechaCreacion(LocalDate.now())
                 .precio(100.0)
                 .descripcion("Mesa de madera")
                 .disponible(true).build();
@@ -283,12 +281,12 @@ public class ProductoServiceTests {
     void ProductoService_ObtenerUltimos8Productos() {
         List<ProductoView> productoViewsMock = Mockito.mock(List.class);
 
-        when(productoRepository.findFirst8ByOrderByFechaCreacionDesc())
+        when(productoRepository.findTop8ByOrderByFechaCreacionDesc())
                 .thenReturn(productoViewsMock);
 
         List<ProductoView> productoViews = productoService.obtenerUltimos8Productos();
 
-        verify(productoRepository).findFirst8ByOrderByFechaCreacionDesc();
+        verify(productoRepository).findTop8ByOrderByFechaCreacionDesc();
         Assertions.assertThat(productoViews).isNotNull();
     }
 }
