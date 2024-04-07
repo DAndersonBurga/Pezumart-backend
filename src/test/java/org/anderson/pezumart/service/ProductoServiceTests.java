@@ -277,4 +277,18 @@ public class ProductoServiceTests {
         verify(productoRepository).findAllByUsuarioId(Mockito.any(), Mockito.any());
         Assertions.assertThat(miProductoViews).isNotNull();
     }
+
+    @Test
+    @DisplayName("Obtener últimos 8 productos")
+    void ProductoService_ObtenerUltimos8Productos() {
+        List<ProductoView> productoViewsMock = Mockito.mock(List.class);
+
+        when(productoRepository.findFirst8ByOrderByFechaCreacionDesc())
+                .thenReturn(productoViewsMock);
+
+        List<ProductoView> productoViews = productoService.obtenerUltimos8Productos();
+
+        verify(productoRepository).findFirst8ByOrderByFechaCreacionDesc();
+        Assertions.assertThat(productoViews).isNotNull();
+    }
 }

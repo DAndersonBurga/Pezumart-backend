@@ -21,4 +21,5 @@ public interface ProductoService {
     ProductoEliminadoResponse eliminarProducto(Long id);
     Page<ProductoView> buscarProductoPorNombre(Pageable pageable, String nombre);
     Page<MiProductoView> buscarProductosDelUsuarioAutenticado(Pageable pageable);
+    List<ProductoView> obtenerUltimos8Productos();
 }

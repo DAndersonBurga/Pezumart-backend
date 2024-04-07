@@ -47,6 +47,7 @@ public class HttpSecurityConfig {
                 // PRODUCTOS
                 authHttp.requestMatchers(HttpMethod.GET,"/producto/listar").permitAll();
                 authHttp.requestMatchers(HttpMethod.GET,"/producto/{id}").permitAll();
+                authHttp.requestMatchers(HttpMethod.GET,"/producto/ultimos").permitAll();
                 authHttp.requestMatchers(HttpMethod.POST, "/producto/buscar").permitAll();
 
                 authHttp.requestMatchers(HttpMethod.GET,"/producto/listar/mis-productos").

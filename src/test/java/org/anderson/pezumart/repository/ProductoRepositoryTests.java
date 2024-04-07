@@ -191,4 +191,14 @@ public class ProductoRepositoryTests {
         Assertions.assertThat(productoEncontrado).isEmpty();
     }
 
+    @Test
+    @DisplayName("Obtener los últimos 8 productos")
+    void ProductoRepository_ObtenerLosUltimos8Productos_ReturnListProductoView() {
+        productoRepository.save(producto);
+
+        List<ProductoView> productoViews = productoRepository.findFirst8ByOrderByFechaCreacionDesc();
+
+        Assertions.assertThat(productoViews).isNotNull();
+        Assertions.assertThat(productoViews).hasSizeGreaterThan(0);
+    }
 }

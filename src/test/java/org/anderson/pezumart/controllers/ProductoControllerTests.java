@@ -1,6 +1,5 @@
 package org.anderson.pezumart.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Part;
 import org.anderson.pezumart.controllers.api.ProductoController;
@@ -10,7 +9,6 @@ import org.anderson.pezumart.controllers.response.ActualizarProductoResponse;
 import org.anderson.pezumart.controllers.response.CrearProductoResponse;
 import org.anderson.pezumart.controllers.response.ProductoEliminadoResponse;
 import org.anderson.pezumart.controllers.response.ProductoResponse;
-import org.anderson.pezumart.entity.Producto;
 import org.anderson.pezumart.repository.ProductoRepository;
 import org.anderson.pezumart.repository.projections.MiProductoView;
 import org.anderson.pezumart.repository.projections.ProductoView;
@@ -21,7 +19,6 @@ import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,22 +27,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.io.IOException;
 import java.util.List;
 
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -83,6 +75,19 @@ public class ProductoControllerTests {
 
         ResultActions response = mockMvc.perform(get("/producto/listar"));
 
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("Listar ultimos 8 productos")
+    void ProductoController_ListarUltimos8Productos_ReturnListProductoView() throws Exception {
+        List<ProductoView> productoViews = List.of();
+
+        when(productoService.obtenerUltimos8Productos())
+                .thenReturn(productoViews);
+
+        ResultActions response = mockMvc.perform(get("/producto/ultimos"));
         response.andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
     }

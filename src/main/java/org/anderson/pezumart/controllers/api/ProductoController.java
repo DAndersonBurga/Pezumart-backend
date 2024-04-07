@@ -51,6 +51,12 @@ public class ProductoController {
         return ResponseEntity.ok(productoResponse);
     }
 
+    @GetMapping("/ultimos")
+    public ResponseEntity<List<ProductoView>> listarUltimosProductos() {
+        List<ProductoView> productos = productoService.obtenerUltimos8Productos();
+        return ResponseEntity.ok(productos);
+    }
+
     @PostMapping("/crear")
     public ResponseEntity<CrearProductoResponse> crearProducto(@RequestPart("producto") @Valid CrearProductoRequest crearProductoRequest,
                                            @RequestPart("files") List<MultipartFile> files) {

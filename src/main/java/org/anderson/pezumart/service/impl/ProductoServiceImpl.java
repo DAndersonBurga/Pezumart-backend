@@ -190,4 +190,9 @@ public class ProductoServiceImpl implements ProductoService {
 
         return productoRepository.findAllByUsuarioId(pageable, usuario.getId());
     }
+
+    @Override
+    public List<ProductoView> obtenerUltimos8Productos() {
+        return productoRepository.findFirst8ByOrderByFechaCreacionDesc();
+    }
 }
