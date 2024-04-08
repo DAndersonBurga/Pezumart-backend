@@ -9,15 +9,14 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Categoria {
+public class ProductoDestacado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 20, unique = true)
-    private String nombre;
+    @ManyToOne
+    @JoinColumn(name = "producto_id")
+    private Producto producto;
 
-    @Column(nullable = false, length = 300)
-    private String imagen;
 }

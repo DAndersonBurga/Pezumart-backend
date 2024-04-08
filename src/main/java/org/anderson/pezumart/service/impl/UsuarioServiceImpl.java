@@ -5,15 +5,9 @@ import org.anderson.pezumart.controllers.request.ActualizarUsuarioRequest;
 import org.anderson.pezumart.controllers.request.RegistrarUsuarioRequest;
 import org.anderson.pezumart.controllers.response.UsuarioActualizadoResponse;
 import org.anderson.pezumart.controllers.response.UsuarioCreadoResponse;
-import org.anderson.pezumart.entity.ImagenProducto;
-import org.anderson.pezumart.entity.Producto;
-import org.anderson.pezumart.entity.Rol;
-import org.anderson.pezumart.entity.Usuario;
+import org.anderson.pezumart.entity.*;
 import org.anderson.pezumart.exceptions.*;
-import org.anderson.pezumart.repository.ImagenProductoRepository;
-import org.anderson.pezumart.repository.ProductoRepository;
-import org.anderson.pezumart.repository.RolRepository;
-import org.anderson.pezumart.repository.UsuarioRepository;
+import org.anderson.pezumart.repository.*;
 import org.anderson.pezumart.service.CloudinaryService;
 import org.anderson.pezumart.service.UsuarioService;
 import org.anderson.pezumart.utils.auth.UsuarioAutenticadoUtils;
@@ -43,10 +37,15 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private ProductoRepository productoRepository;
+
     @Autowired
     private ImagenProductoRepository imagenProductoRepository;
+
+    @Autowired
+    private ProductoDestacadoRepository productoDestacadoRepository;
 
     @Override
     public UsuarioCreadoResponse registrarUsuario(RegistrarUsuarioRequest registrarUsuarioRequest, MultipartFile file) {

@@ -10,6 +10,7 @@ import org.anderson.pezumart.entity.*;
 import org.anderson.pezumart.entity.enums.ERol;
 import org.anderson.pezumart.repository.CategoriaRepository;
 import org.anderson.pezumart.repository.ImagenProductoRepository;
+import org.anderson.pezumart.repository.ProductoDestacadoRepository;
 import org.anderson.pezumart.repository.ProductoRepository;
 import org.anderson.pezumart.repository.projections.MiProductoView;
 import org.anderson.pezumart.repository.projections.ProductoView;
@@ -33,6 +34,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,6 +49,9 @@ public class ProductoServiceTests {
 
     @Mock
     private ImagenProductoRepository imagenProductoRepository;
+
+    @Mock
+    private ProductoDestacadoRepository productoDestacadoRepository;
 
     @Mock
     private UsuarioService usuarioService;
@@ -96,6 +101,7 @@ public class ProductoServiceTests {
                 .nombre("Mesa")
                 .categoria(categoria)
                 .usuario(usuario)
+                .fechaCreacion(LocalDateTime.now())
                 .cantidadDisponible(10)
                 .precio(100.0)
                 .descripcion("Mesa de madera")
@@ -288,5 +294,41 @@ public class ProductoServiceTests {
 
         verify(productoRepository).findTop8ByOrderByFechaCreacionDesc();
         Assertions.assertThat(productoViews).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Destacar Producto")
+    void ProductoService_DestacarProducto_ReturnString() {
+        when(productoRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(producto));
+
+        when(productoDestacadoRepository.save(Mockito.any()))
+                .thenReturn(ProductoDestacado.builder().id(1L).producto(producto).build());
+
+        String mensaje = productoService.descatarProducto(1L);
+
+        verify(productoRepository).findById(Mockito.any());
+
+        Assertions.assertThat(mensaje).isNotBlank();
+    }
+
+    @Test
+    @DisplayName("Eliminar Producto Destacado")
+    void ProductoService_EliminarProductoDestacado_ReturnString() {
+        ProductoDestacado productoDestacado = ProductoDestacado.builder()
+                .id(1L)
+                .producto(producto)
+                .build();
+
+        when(productoDestacadoRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(productoDestacado));
+
+        doNothing().when(productoDestacadoRepository).delete(Mockito.any());
+
+        String mensaje = productoService.eliminarProductoDestacado(1L);
+
+        verify(productoDestacadoRepository).findById(Mockito.any());
+
+        Assertions.assertThat(mensaje).isNotBlank();
     }
 }

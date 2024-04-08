@@ -39,7 +39,7 @@ public class ImagenProductoRepositoryTests {
 
     @BeforeEach
     void setUp() {
-        Categoria categoria = Categoria.builder().nombre("Categoria de prueba").build();
+        Categoria categoria = Categoria.builder().nombre("Categoria de prueba").imagen("http://imagen.com").build();
         Rol rol = Rol.builder().rol(ERol.ADMINISTRADOR).build();
 
         rolRepository.save(rol);

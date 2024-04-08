@@ -5,7 +5,7 @@ INSERT INTO categoria (id, nombre) VALUES (1, 'Tecnología'),
                                          (2, 'Hogar'),
                                          (3, 'Deporte'),
                                          (4, 'Moda'),
-                                         (5, 'Mascotas'),
+                                         (5, 'Comida'),
                                          (6, 'Otros');
 
 INSERT INTO usuario (id, nombre_completo, telefono, nombre_imagen, imagen_url, coordenadas, password, correo, id_rol)

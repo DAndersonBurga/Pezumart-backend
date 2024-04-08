@@ -46,6 +46,7 @@ public class HttpSecurityConfig {
 
                 // PRODUCTOS
                 authHttp.requestMatchers(HttpMethod.GET,"/producto/listar").permitAll();
+                authHttp.requestMatchers(HttpMethod.GET,"/producto/destacados").permitAll();
                 authHttp.requestMatchers(HttpMethod.GET,"/producto/{id}").permitAll();
                 authHttp.requestMatchers(HttpMethod.GET,"/producto/ultimos").permitAll();
                 authHttp.requestMatchers(HttpMethod.POST, "/producto/buscar").permitAll();
@@ -65,6 +66,11 @@ public class HttpSecurityConfig {
                 authHttp.requestMatchers(HttpMethod.DELETE, "/producto/eliminar/{id}")
                         .hasAnyRole(ERol.USUARIO.name(), ERol.ADMINISTRADOR.name());
 
+                authHttp.requestMatchers(HttpMethod.DELETE, "/producto/destacado/eliminar/{id}")
+                        .hasRole(ERol.ADMINISTRADOR.name());
+
+                authHttp.requestMatchers(HttpMethod.POST, "/producto/destacar")
+                        .hasRole(ERol.ADMINISTRADOR.name());
 
 
                 // USUARIOS

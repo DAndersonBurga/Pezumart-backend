@@ -6,13 +6,11 @@ import org.anderson.pezumart.controllers.response.ActualizarProductoResponse;
 import org.anderson.pezumart.controllers.response.CrearProductoResponse;
 import org.anderson.pezumart.controllers.response.ProductoEliminadoResponse;
 import org.anderson.pezumart.controllers.response.ProductoResponse;
-import org.anderson.pezumart.entity.Categoria;
-import org.anderson.pezumart.entity.ImagenProducto;
-import org.anderson.pezumart.entity.Producto;
-import org.anderson.pezumart.entity.Usuario;
+import org.anderson.pezumart.entity.*;
 import org.anderson.pezumart.exceptions.*;
 import org.anderson.pezumart.repository.CategoriaRepository;
 import org.anderson.pezumart.repository.ImagenProductoRepository;
+import org.anderson.pezumart.repository.ProductoDestacadoRepository;
 import org.anderson.pezumart.repository.ProductoRepository;
 import org.anderson.pezumart.repository.projections.MiProductoView;
 import org.anderson.pezumart.repository.projections.ProductoView;
@@ -48,6 +46,9 @@ public class ProductoServiceImpl implements ProductoService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
+    @Autowired
+    private ProductoDestacadoRepository productoDestacadoRepository;
+
     @Override
     public ProductoResponse obtenerProductoPorId(Long id) {
 
@@ -76,7 +77,8 @@ public class ProductoServiceImpl implements ProductoService {
                 .autor(Map.of(
                         "id", producto.getUsuario().getId().toString(),
                         "nombre", producto.getUsuario().getNombreCompleto(),
-                        "imagen", producto.getUsuario().getImagenUrl()
+                        "imagen", producto.getUsuario().getImagenUrl(),
+                        "telefono", producto.getUsuario().getTelefono()
                 ))
                 .imagenes(imagenesProducto)
                 .build();
@@ -194,5 +196,38 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public List<ProductoView> obtenerUltimos8Productos() {
         return productoRepository.findTop8ByOrderByFechaCreacionDesc();
+    }
+
+    @Override
+    public String descatarProducto(Long id) {
+        if(id == null) throw new ProductoNotFoundException("El id del producto no puede ser nulo");
+        List<ProductoDestacado> productoDestacados = productoDestacadoRepository.findAll();
+
+        if(productoDestacados.size() == 8) {
+            throw new MaxFeaturedProductsReachedException("No puedes destacar más de 8 productos");
+        }
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new ProductoNotFoundException("Producto no encontrado"));
+
+        boolean existeProductoDestacado = productoDestacados.stream().anyMatch(productoDestacado -> productoDestacado.getProducto().getId().equals(id));
+
+        if(existeProductoDestacado) {
+            throw new ProductoAlreadyFeaturedException("El producto ya está destacado");
+        }
+
+        ProductoDestacado productoDestacado = ProductoDestacado.builder().producto(producto).build();
+        productoDestacadoRepository.save(productoDestacado);
+
+        return "Producto destacado exitosamente";
+    }
+
+    @Override
+    public String eliminarProductoDestacado(Long id) {
+        ProductoDestacado productoDestacado = productoDestacadoRepository.findById(id)
+                .orElseThrow(() -> new ProductoDestacadoNotFoundException("Producto destacado no encontrado"));
+
+        productoDestacadoRepository.delete(productoDestacado);
+
+        return "Producto destacado eliminado exitosamente";
     }
 }

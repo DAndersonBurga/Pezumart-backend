@@ -2,11 +2,14 @@ package org.anderson.pezumart.controllers.api;
 
 import jakarta.validation.Valid;
 import org.anderson.pezumart.controllers.request.ActualizarProductoRequest;
+import org.anderson.pezumart.controllers.request.CrearProductoDestacadoRequest;
 import org.anderson.pezumart.controllers.request.CrearProductoRequest;
 import org.anderson.pezumart.controllers.response.ActualizarProductoResponse;
 import org.anderson.pezumart.controllers.response.CrearProductoResponse;
 import org.anderson.pezumart.controllers.response.ProductoEliminadoResponse;
 import org.anderson.pezumart.controllers.response.ProductoResponse;
+import org.anderson.pezumart.entity.ProductoDestacado;
+import org.anderson.pezumart.repository.ProductoDestacadoRepository;
 import org.anderson.pezumart.repository.ProductoRepository;
 import org.anderson.pezumart.repository.projections.MiProductoView;
 import org.anderson.pezumart.repository.projections.ProductoView;
@@ -21,6 +24,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/producto")
@@ -31,6 +35,9 @@ public class ProductoController {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private ProductoDestacadoRepository productoDestacadoRepository;
 
     @GetMapping("/listar")
     public ResponseEntity<Page<ProductoView>> listarProductos(Pageable pageable) {
@@ -55,6 +62,26 @@ public class ProductoController {
     public ResponseEntity<List<ProductoView>> listarUltimosProductos() {
         List<ProductoView> productos = productoService.obtenerUltimos8Productos();
         return ResponseEntity.ok(productos);
+    }
+
+    @GetMapping("/destacados")
+    public ResponseEntity<List<ProductoDestacado>> listarProductosDestacados() {
+        List<ProductoDestacado> productos = productoDestacadoRepository.findAll();
+        return ResponseEntity.ok(productos);
+    }
+
+    @PostMapping("/destacar")
+    public ResponseEntity<Map<String, String>> destacarProducto(@Valid @RequestBody CrearProductoDestacadoRequest crearProductoDestacadoRequest) {
+        String mensaje = productoService.descatarProducto(crearProductoDestacadoRequest.getProductoId());
+
+        return ResponseEntity.ok(Map.of("mensaje", mensaje));
+    }
+
+    @DeleteMapping("/destacado/eliminar/{id}")
+    public ResponseEntity<Map<String, String>> eliminarProductoDestacado(@PathVariable Long id) {
+       String mensaje = productoService.eliminarProductoDestacado(id);
+
+        return ResponseEntity.ok(Map.of("mensaje", mensaje));
     }
 
     @PostMapping("/crear")

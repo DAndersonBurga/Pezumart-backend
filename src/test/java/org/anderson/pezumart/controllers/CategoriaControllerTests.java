@@ -47,7 +47,7 @@ public class CategoriaControllerTests {
     @DisplayName("Listar Categorias")
     void CategoriaController_ListarCategorias_ReturnListCategoria() throws Exception {
         when(categoriaRepository.findAll())
-                .thenReturn(List.of(new Categoria(1L, "Comida")));
+                .thenReturn(List.of(new Categoria(1L, "Comida", "")));
 
         ResultActions response = mockMvc.perform(get("/categoria/listar"));
         response.andExpect(MockMvcResultMatchers.status().isOk())

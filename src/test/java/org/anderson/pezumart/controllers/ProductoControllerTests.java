@@ -1,5 +1,6 @@
 package org.anderson.pezumart.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Part;
 import org.anderson.pezumart.controllers.api.ProductoController;
@@ -9,6 +10,8 @@ import org.anderson.pezumart.controllers.response.ActualizarProductoResponse;
 import org.anderson.pezumart.controllers.response.CrearProductoResponse;
 import org.anderson.pezumart.controllers.response.ProductoEliminadoResponse;
 import org.anderson.pezumart.controllers.response.ProductoResponse;
+import org.anderson.pezumart.entity.ProductoDestacado;
+import org.anderson.pezumart.repository.ProductoDestacadoRepository;
 import org.anderson.pezumart.repository.ProductoRepository;
 import org.anderson.pezumart.repository.projections.MiProductoView;
 import org.anderson.pezumart.repository.projections.ProductoView;
@@ -37,6 +40,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -54,6 +58,9 @@ public class ProductoControllerTests {
 
     @MockBean
     private ProductoRepository productoRepository;
+
+    @MockBean
+    private ProductoDestacadoRepository productoDestacadoRepository;
 
     @MockBean
     private ProductoService productoService;
@@ -219,6 +226,54 @@ public class ProductoControllerTests {
                 .param("nombre", "Producto 1"));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("Listar productos destacados")
+    void ProductoController_ListarProductosDestacados_ReturnListProductoDestacado() throws Exception {
+        ProductoDestacado productoDestacado = ProductoDestacado.builder()
+                .id(1L)
+                .build();
+        List<ProductoDestacado> productoDestacados = List.of(productoDestacado);
+
+       when(productoDestacadoRepository.findAll()).thenReturn(productoDestacados);
+
+        ResultActions response = mockMvc.perform(get("/producto/destacados"));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", CoreMatchers.is(1)))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("Destacar producto")
+    void ProductoController_CrearProductoDestacado_ReturnMap() throws Exception {
+        Map<String, Long> productoDestacado = Map.of("productoId", 1L);
+
+        when(productoService.descatarProducto(Mockito.anyLong()))
+                .thenReturn("Producto Destacado");
+
+        ResultActions response = mockMvc.perform(post("/producto/destacar")
+                .content(objectMapper.writeValueAsString(productoDestacado))
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.mensaje", CoreMatchers.is("Producto Destacado")))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("Eliminar producto destacado")
+    void ProductoController_EliminarProductoDestacado_ReturnMap() throws Exception {
+
+        when(productoService.eliminarProductoDestacado(Mockito.anyLong()))
+                .thenReturn("Producto Destacado Eliminado");
+
+        ResultActions response = mockMvc.perform(delete("/producto/destacado/eliminar/1"));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.mensaje", CoreMatchers.is("Producto Destacado Eliminado")))
                 .andDo(MockMvcResultHandlers.print());
     }
 }

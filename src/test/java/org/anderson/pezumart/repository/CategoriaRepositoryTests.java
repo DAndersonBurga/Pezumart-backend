@@ -26,6 +26,7 @@ public class CategoriaRepositoryTests {
     void setUp() {
         categoria = Categoria.builder()
                 .nombre("Golosinas")
+                .imagen("http://imagen.com")
                 .build();
     }
 
