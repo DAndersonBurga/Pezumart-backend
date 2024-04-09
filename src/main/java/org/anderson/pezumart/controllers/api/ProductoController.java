@@ -70,6 +70,13 @@ public class ProductoController {
         return ResponseEntity.ok(productos);
     }
 
+    @GetMapping("/categoria/{id}")
+    public ResponseEntity<Page<ProductoView>> listarProductosPorCategoria(Pageable pageable, @PathVariable Long id) {
+        Page<ProductoView> productos = productoService.obtenerProductosPorCategoria(pageable, id);
+
+        return ResponseEntity.ok(productos);
+    }
+
     @PostMapping("/destacar")
     public ResponseEntity<Map<String, String>> destacarProducto(@Valid @RequestBody CrearProductoDestacadoRequest crearProductoDestacadoRequest) {
         String mensaje = productoService.descatarProducto(crearProductoDestacadoRequest.getProductoId());

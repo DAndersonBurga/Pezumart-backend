@@ -50,6 +50,7 @@ public class HttpSecurityConfig {
                 authHttp.requestMatchers(HttpMethod.GET,"/producto/{id}").permitAll();
                 authHttp.requestMatchers(HttpMethod.GET,"/producto/ultimos").permitAll();
                 authHttp.requestMatchers(HttpMethod.POST, "/producto/buscar").permitAll();
+                authHttp.requestMatchers(HttpMethod.POST, "/producto/categoria/{id}").permitAll();
 
                 authHttp.requestMatchers(HttpMethod.GET,"/producto/listar/mis-productos").
                         hasAnyRole(ERol.USUARIO.name(), ERol.ADMINISTRADOR.name());

@@ -14,6 +14,6 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     Page<ProductoView> findAllByNombreContainingIgnoreCase(Pageable pageable, String nombre);
     Page<MiProductoView> findAllByUsuarioId(Pageable pageable, Long id);
     List<Producto> findAllByUsuarioId(Long id);
-
     List<ProductoView> findTop8ByOrderByFechaCreacionDesc();
+    Page<ProductoView> findAllByCategoriaId(Pageable pageable, Long id);
 }

@@ -276,4 +276,18 @@ public class ProductoControllerTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.mensaje", CoreMatchers.is("Producto Destacado Eliminado")))
                 .andDo(MockMvcResultHandlers.print());
     }
+
+    @DisplayName("Obtener productos por categoria id")
+    @Test
+    void ProductoController_ObtenerProductosPorCategoriaId_ReturnPageProductoView() throws Exception {
+        Page<ProductoView> productoViews = new PageImpl<>(List.of());
+
+        when(productoService.obtenerProductosPorCategoria(Mockito.any(), Mockito.anyLong()))
+                .thenReturn(productoViews);
+
+        ResultActions response = mockMvc.perform(get("/producto/categoria/1"));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+    }
 }

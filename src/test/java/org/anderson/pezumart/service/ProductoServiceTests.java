@@ -338,4 +338,18 @@ public class ProductoServiceTests {
 
         Assertions.assertThat(mensaje).isNotBlank();
     }
+
+    @DisplayName("Obtener productos por categoria id")
+    @Test
+    void ProductoService_ObtenerProductosPorCategoriaId_ReturnPageProductoView() {
+        Page<ProductoView> page = Mockito.mock(Page.class);
+
+        when(productoRepository.findAllByCategoriaId(Mockito.any(), Mockito.any()))
+                .thenReturn(page);
+
+        Page<ProductoView> productoViews = productoService.obtenerProductosPorCategoria(Pageable.ofSize(5), 1L);
+
+        verify(productoRepository).findAllByCategoriaId(Mockito.any(), Mockito.any());
+        Assertions.assertThat(productoViews).isNotNull();
+    }
 }

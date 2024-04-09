@@ -39,10 +39,11 @@ public class ProductoRepositoryTests {
 
     private Usuario usuario;
     private Producto producto;
+    private Categoria categoria;
 
     @BeforeEach
     void setUp() {
-        Categoria categoria = Categoria.builder().nombre("Categoria de prueba").imagen("http://imagen.com").build();
+        categoria = Categoria.builder().nombre("Categoria de prueba").imagen("http://imagen.com").build();
         Rol rol = Rol.builder().rol(ERol.ADMINISTRADOR).build();
 
         rolRepository.save(rol);
@@ -200,5 +201,16 @@ public class ProductoRepositoryTests {
 
         Assertions.assertThat(productoViews).isNotNull();
         Assertions.assertThat(productoViews).hasSizeGreaterThan(0);
+    }
+
+    @DisplayName("Obtener productos por categoria id")
+    @Test
+    void ProductoRepository_ObtenerProductosPorCategoriaId_ReturnPageProductoView() {
+        productoRepository.save(producto);
+
+        Page<ProductoView> productos = productoRepository.findAllByCategoriaId(Pageable.ofSize(5), categoria.getId());
+
+        Assertions.assertThat(productos).isNotNull();
+        Assertions.assertThat(productos).hasSizeGreaterThan(0);
     }
 }

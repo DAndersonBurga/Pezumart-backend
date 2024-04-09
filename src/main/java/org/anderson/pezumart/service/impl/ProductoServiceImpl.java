@@ -47,8 +47,6 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Autowired
     private ProductoDestacadoRepository productoDestacadoRepository;
-    @Autowired
-    private UsuarioRepository usuarioRepository;
 
     @Override
     public ProductoResponse obtenerProductoPorId(Long id) {
@@ -204,6 +202,13 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public List<ProductoView> obtenerUltimos8Productos() {
         return productoRepository.findTop8ByOrderByFechaCreacionDesc();
+    }
+
+    @Override
+    public Page<ProductoView> obtenerProductosPorCategoria(Pageable pageable, Long id) {
+        if(id == null) throw new CategoriaNotFoundException("El id de la categoria no puede ser nulo");
+
+        return productoRepository.findAllByCategoriaId(pageable, id);
     }
 
     @Override
