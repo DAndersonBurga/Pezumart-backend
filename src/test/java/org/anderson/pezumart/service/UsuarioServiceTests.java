@@ -5,16 +5,11 @@ import org.anderson.pezumart.controllers.request.RegistrarUsuarioRequest;
 import org.anderson.pezumart.controllers.response.UsuarioActualizadoResponse;
 import org.anderson.pezumart.controllers.response.UsuarioCreadoResponse;
 import org.anderson.pezumart.controllers.response.UsuarioEliminadoResponse;
-import org.anderson.pezumart.entity.ImagenProducto;
-import org.anderson.pezumart.entity.Producto;
-import org.anderson.pezumart.entity.Rol;
-import org.anderson.pezumart.entity.Usuario;
+import org.anderson.pezumart.entity.*;
 import org.anderson.pezumart.entity.enums.ERol;
-import org.anderson.pezumart.repository.ImagenProductoRepository;
-import org.anderson.pezumart.repository.ProductoRepository;
-import org.anderson.pezumart.repository.RolRepository;
-import org.anderson.pezumart.repository.UsuarioRepository;
+import org.anderson.pezumart.repository.*;
 import org.anderson.pezumart.service.impl.UsuarioServiceImpl;
+import org.anderson.pezumart.utils.auth.UsuarioAutenticadoUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,12 +17,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
@@ -57,6 +56,9 @@ public class UsuarioServiceTests {
 
     @Mock
     private ImagenProductoRepository imagenProductoRepository;
+
+    @Mock
+    private ProductoDestacadoRepository productoDestacadoRepository;
 
     @InjectMocks
     private UsuarioServiceImpl usuarioService;
@@ -203,9 +205,15 @@ public class UsuarioServiceTests {
         Usuario usuario = Usuario.builder()
                 .id(1L)
                 .nombreImagen("imagen123")
-                .nombreCompleto("Anderson").build();
+                .nombreCompleto("Anderson")
+                .rol(Rol.builder().id(1L).rol(ERol.ADMINISTRADOR).build()).build();
 
         Producto producto = Producto.builder().id(1L).build();
+
+        ProductoDestacado productoDestacado = ProductoDestacado.builder()
+                .id(1L)
+                .producto(producto)
+                .build();
 
         ImagenProducto imagenProducto = ImagenProducto.builder().nombreImagen("imagen123").build();
 
@@ -215,12 +223,27 @@ public class UsuarioServiceTests {
         when(usuarioRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.of(usuario));
 
+        when(usuarioRepository.findByCorreo(Mockito.anyString()))
+                .thenReturn(Optional.of(usuario));
+
+        try (MockedStatic<UsuarioAutenticadoUtils> usuarioAutenticadoUtils = Mockito.mockStatic(UsuarioAutenticadoUtils.class)) {
+            Authentication authentication = new UsernamePasswordAuthenticationToken("correo123@gmail.com", "contraseña");
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            usuarioAutenticadoUtils.when(UsuarioAutenticadoUtils::obtenerCorreoDeUsuarioAutenticado)
+                    .thenReturn("correo123@gmail.com");
+        }
+
+        when(productoDestacadoRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(productoDestacado));
+
         when(productoRepository.findAllByUsuarioId(Mockito.anyLong()))
                 .thenReturn(productos);
 
         when(imagenProductoRepository.findAllByProductoId(Mockito.anyLong()))
                 .thenReturn(imagenProductos);
 
+        doNothing().when(productoDestacadoRepository).delete(Mockito.any(ProductoDestacado.class));
         doNothing().when(cloudinaryService).deleteImage(Mockito.anyString());
         doNothing().when(imagenProductoRepository).deleteAll(imagenProductos);
         doNothing().when(productoRepository).deleteAll(productos);

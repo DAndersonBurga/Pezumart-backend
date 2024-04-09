@@ -6,6 +6,7 @@ import org.anderson.pezumart.controllers.request.RegistrarUsuarioRequest;
 import org.anderson.pezumart.controllers.response.UsuarioActualizadoResponse;
 import org.anderson.pezumart.controllers.response.UsuarioCreadoResponse;
 import org.anderson.pezumart.entity.*;
+import org.anderson.pezumart.entity.enums.ERol;
 import org.anderson.pezumart.exceptions.*;
 import org.anderson.pezumart.repository.*;
 import org.anderson.pezumart.service.CloudinaryService;
@@ -150,10 +151,22 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFountException("Usuario no encontrado."));
 
+        Usuario usuarioAutenticado = usuarioRepository.findByCorreo(UsuarioAutenticadoUtils.obtenerCorreoDeUsuarioAutenticado())
+                .orElseThrow(() -> new UsuarioNotFountException("Usuario no encontrado."));
+
+        if(!usuarioAutenticado.getRol().getRol().equals(ERol.ADMINISTRADOR) ||
+            !usuarioAutenticado.getId().equals(usuario.getId())) {
+            throw new UnauthorizedException("No tienes permisos para realizar esta acción.");
+        }
+
         List<Producto> productos = productoRepository.findAllByUsuarioId(id);
         List<List<ImagenProducto>> imagenesProductos = productos.stream()
                 .map(producto -> imagenProductoRepository.findAllByProductoId(producto.getId()))
                 .toList();
+
+        Optional<ProductoDestacado> productoDestacadoOptional = productoDestacadoRepository.findById(id);
+
+        productoDestacadoOptional.ifPresent(productoDestacado -> productoDestacadoRepository.delete(productoDestacado));
 
         imagenesProductos.forEach(imagenProductos -> {
             imagenProductos.forEach(imagenProducto -> {

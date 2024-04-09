@@ -7,11 +7,9 @@ import org.anderson.pezumart.controllers.response.CrearProductoResponse;
 import org.anderson.pezumart.controllers.response.ProductoEliminadoResponse;
 import org.anderson.pezumart.controllers.response.ProductoResponse;
 import org.anderson.pezumart.entity.*;
+import org.anderson.pezumart.entity.enums.ERol;
 import org.anderson.pezumart.exceptions.*;
-import org.anderson.pezumart.repository.CategoriaRepository;
-import org.anderson.pezumart.repository.ImagenProductoRepository;
-import org.anderson.pezumart.repository.ProductoDestacadoRepository;
-import org.anderson.pezumart.repository.ProductoRepository;
+import org.anderson.pezumart.repository.*;
 import org.anderson.pezumart.repository.projections.MiProductoView;
 import org.anderson.pezumart.repository.projections.ProductoView;
 import org.anderson.pezumart.service.CloudinaryService;
@@ -26,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +47,8 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Autowired
     private ProductoDestacadoRepository productoDestacadoRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Override
     public ProductoResponse obtenerProductoPorId(Long id) {
@@ -157,15 +158,22 @@ public class ProductoServiceImpl implements ProductoService {
                 .orElseThrow(() -> new ProductoNotFoundException("Producto no encontrado"));
 
         String usuarioAutenticadoCorreo = UsuarioAutenticadoUtils.obtenerCorreoDeUsuarioAutenticado();
+        Usuario usuario = usuarioService.buscarUsuarioPorCorreo(usuarioAutenticadoCorreo);
 
-        if(!usuarioAutenticadoCorreo.equals(producto.getUsuario().getCorreo())) {
-            throw new UnauthorizedProductoDeletionException("No tienes permisos para eliminar este producto");
+        if(!(usuario.getRol().getRol().equals(ERol.ADMINISTRADOR))) {
+            if(!usuarioAutenticadoCorreo.equals(producto.getUsuario().getCorreo())) {
+                throw new UnauthorizedProductoDeletionException("No tienes permisos para eliminar este producto");
+            }
         }
 
         List<ImagenProducto> imagenProductoList = imagenProductoRepository.findAllByProductoId(producto.getId());
         imagenProductoList.forEach(imagenProducto -> {
             cloudinaryService.deleteImage(imagenProducto.getNombreImagen());
         });
+
+        Optional<ProductoDestacado> productoDestacado = productoDestacadoRepository.findById(producto.getId());
+
+        productoDestacado.ifPresent(destacado -> productoDestacadoRepository.delete(destacado));
 
         imagenProductoRepository.deleteAll(imagenProductoList);
         productoRepository.delete(producto);

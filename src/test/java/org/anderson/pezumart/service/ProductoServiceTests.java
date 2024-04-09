@@ -230,9 +230,16 @@ public class ProductoServiceTests {
                     .thenReturn("correo123@gmail.com");
         }
 
+        when(usuarioService.buscarUsuarioPorCorreo(Mockito.anyString()))
+                .thenReturn(usuario);
+
         when(imagenProductoRepository.findAllByProductoId(Mockito.anyLong()))
                 .thenReturn(List.of(imagenProducto));
 
+        when(productoDestacadoRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(ProductoDestacado.builder().id(1L).producto(producto).build()));
+
+        doNothing().when(productoDestacadoRepository).delete(Mockito.any());
         doNothing().when(cloudinaryService).deleteImage(Mockito.anyString());
         doNothing().when(imagenProductoRepository).deleteAll(Mockito.anyList());
         doNothing().when(productoRepository).delete(Mockito.any(Producto.class));

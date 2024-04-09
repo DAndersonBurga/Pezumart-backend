@@ -1,6 +1,7 @@
 package org.anderson.pezumart.error;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.anderson.pezumart.exceptions.UnauthorizedException;
 import org.anderson.pezumart.utils.error.ApiErrorUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,4 +29,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
     }
 
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiError> handleUnauthorizedException(HttpServletRequest httpRequest, UnauthorizedException e) {
+        ApiError apiError = ApiErrorUtils.generateApiError(e, httpRequest, "No autorizado");
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
+    }
 }
