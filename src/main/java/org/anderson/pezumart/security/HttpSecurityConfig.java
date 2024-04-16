@@ -41,6 +41,9 @@ public class HttpSecurityConfig {
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(authHttp -> {
 
+                // SWAGGER
+                authHttp.requestMatchers(HttpMethod.GET, "/doc/**").permitAll();
+
                 // CATEGORÍAS
                 authHttp.requestMatchers(HttpMethod.GET, "/categoria/listar").permitAll();
 
@@ -50,7 +53,7 @@ public class HttpSecurityConfig {
                 authHttp.requestMatchers(HttpMethod.GET,"/producto/{id}").permitAll();
                 authHttp.requestMatchers(HttpMethod.GET,"/producto/ultimos").permitAll();
                 authHttp.requestMatchers(HttpMethod.POST, "/producto/buscar").permitAll();
-                authHttp.requestMatchers(HttpMethod.POST, "/producto/categoria/{id}").permitAll();
+                authHttp.requestMatchers(HttpMethod.GET, "/producto/categoria/{id}").permitAll();
 
                 authHttp.requestMatchers(HttpMethod.GET,"/producto/listar/mis-productos").
                         hasAnyRole(ERol.USUARIO.name(), ERol.ADMINISTRADOR.name());
@@ -100,6 +103,7 @@ public class HttpSecurityConfig {
                 // AUTENTICACIÓN
                 authHttp.requestMatchers(HttpMethod.POST, "/auth/login").permitAll();
                 authHttp.requestMatchers(HttpMethod.GET, "/auth/validate").permitAll();
+
             })
             .exceptionHandling(exception -> {
                 exception.accessDeniedHandler(customAccessDeniedHandler);
